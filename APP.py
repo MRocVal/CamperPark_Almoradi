@@ -20,6 +20,9 @@ CSV_FILE = "camper_park_data.csv"
 if "data" not in st.session_state:
     if os.path.exists(CSV_FILE):
         st.session_state["data"] = pd.read_csv(CSV_FILE)
+        # Convertir columnas de fechas al formato adecuado
+        st.session_state["data"]["Día de llegada"] = pd.to_datetime(st.session_state["data"]["Día de llegada"]).dt.date
+        st.session_state["data"]["Día de salida estimado"] = pd.to_datetime(st.session_state["data"]["Día de salida estimado"]).dt.date
     else:
         st.session_state["data"] = pd.DataFrame(
             columns=["Nº de plaza", "Nombre", "Día de llegada", "Día de salida estimado", "Nacionalidad", "Servicios"]
@@ -29,20 +32,101 @@ if "data" not in st.session_state:
 def save_data_to_csv():
     st.session_state["data"].to_csv(CSV_FILE, index=False)
 
+
+
 # Menú de navegación
-menu = ["Consulta", "Búsqueda", "Modificación", "Eliminación"]
+menu = ["Principal", "Consulta", "Búsqueda", "Modificación/Añadir", "Eliminación"]
 choice = st.sidebar.selectbox("Seleccione una página", menu)
 
+
+
+
+
+
+if choice == "Principal":
+    st.title("Camper Park Almoradí")
+    st.image("image1.jpeg", use_column_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
+    st.write("""
+        **Bienvenidos a Camper Park Almoradí**  
+        Este sistema ha sido diseñado para gestionar, coordinar y organizar el uso de las plazas en nuestro parking de una manera eficiente.  
+        
+        Podrás:
+        - Consultar la ocupación actual.
+        - Buscar clientes registrados.
+        - Modificar información de las plazas.
+        - Eliminar registros según necesidad.
+
+        ¡Gracias por confiar en nosotros!
+    """)
+
+
+        
+        
+        
+        
 # Página de Consulta
-if choice == "Consulta":
+elif choice == "Consulta":
     st.title("Consulta del Estado del Parking")
     if st.session_state["data"].empty:
         st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
     else:
+        # Mostrar tabla de datos
         st.dataframe(st.session_state["data"])
+
+        # Calcular el tiempo de estancia para cada plaza
+        st.session_state["data"]["Duración"] = (
+            pd.to_datetime(st.session_state["data"]["Día de salida estimado"]) - 
+            pd.to_datetime(st.session_state["data"]["Día de llegada"])
+        ).dt.days
+
+        # Determinar el color según la duración de la estancia
+        def asignar_color(duracion):
+            if pd.isnull(duracion):  # Vacías
+                return "blue"
+            elif duracion > 10:  # Mucho tiempo
+                return "red"
+            elif 5 <= duracion <= 10:  # Tiempo medio
+                return "yellow"
+            elif duracion < 5:  # Poco tiempo
+                return "green"
+
+        st.session_state["data"]["Color"] = st.session_state["data"]["Duración"].apply(asignar_color)
+
+        # Crear un gráfico de plazas usando Plotly
+        import plotly.graph_objects as go
+
+        fig = go.Figure()
+
+        for index, row in st.session_state["data"].iterrows():
+            fig.add_trace(go.Scatter(
+                x=[row["Nº de plaza"]],
+                y=[1],  # Posición ficticia para alinear las plazas
+                mode="markers",
+                marker=dict(size=30, color=row["Color"], symbol="square"),
+                name=f"Plaza {row['Nº de plaza']} - {row['Duración']} días"
+            ))
+
+        # Configuración del gráfico
+        fig.update_layout(
+            title="Estado de las Plazas",
+            xaxis=dict(title="Número de Plaza", tickmode="linear"),
+            yaxis=dict(visible=False),  # Ocultar el eje Y
+            showlegend=True,
+            height=400
+        )
+
+        # Mostrar gráfico
+        st.plotly_chart(fig, use_container_width=True)
+
+
+
 
 # Página de Búsqueda
 elif choice == "Búsqueda":
+    
+    
+    
+    
     st.title("Búsqueda de Plazas")
     search_name = st.text_input("Introduce el nombre del cliente:")
     if st.button("Buscar"):
@@ -53,17 +137,43 @@ elif choice == "Búsqueda":
             st.warning("No se encontraron resultados para la búsqueda.")
 
 # Página de Modificación
-elif choice == "Modificación":
+elif choice == "Modificación/Añadir":
+    
+    
+    
+    
+    st.title("Consulta del Estado del Parking")
+    if st.session_state["data"].empty:
+        st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
+    else:
+        st.dataframe(st.session_state["data"])
+    
     st.title("Añadir o Modificar Información de Plazas")
     
-    # Variables del formulario inicializadas con valores predeterminados
+    # Selección del número de plaza
     plaza = st.number_input("Número de plaza:", min_value=1, value=1)
-    nombre = st.text_input("Nombre:")
-    llegada = st.date_input("Día de llegada:")
-    salida = st.date_input("Día de salida estimado:")
-    nacionalidad = st.text_input("Nacionalidad:")
-    servicios = st.text_input("Servicios contratados:")
-
+    
+    # Buscar registro existente por número de plaza
+    existing_row = st.session_state["data"][
+        st.session_state["data"]["Nº de plaza"] == plaza
+    ]
+    
+    # Inicializar campos con valores existentes si el registro ya está en la base de datos
+    if not existing_row.empty:
+        existing_row = existing_row.iloc[0]
+        nombre = st.text_input("Nombre:", value=existing_row["Nombre"])
+        llegada = st.date_input("Día de llegada:", value=pd.to_datetime(existing_row["Día de llegada"]))
+        salida = st.date_input("Día de salida estimado:", value=pd.to_datetime(existing_row["Día de salida estimado"]))
+        nacionalidad = st.text_input("Nacionalidad:", value=existing_row["Nacionalidad"])
+        servicios = st.text_input("Servicios contratados:", value=existing_row["Servicios"])
+    else:
+        # Si no hay un registro existente, campos vacíos
+        nombre = st.text_input("Nombre:")
+        llegada = st.date_input("Día de llegada:")
+        salida = st.date_input("Día de salida estimado:")
+        nacionalidad = st.text_input("Nacionalidad:")
+        servicios = st.text_input("Servicios contratados:")
+    
     if st.button("Guardar"):
         # Crear o actualizar el registro
         row = {
@@ -88,16 +198,30 @@ elif choice == "Modificación":
             st.success(f"Plaza {plaza} añadida.")
         save_data_to_csv()
 
+
+
 # Página de Eliminación
 elif choice == "Eliminación":
+        
     st.title("Eliminar Registros")
     delete_plaza = st.number_input("Número de plaza a eliminar:", min_value=1, value=1, key="delete_plaza")
-    if st.button("Eliminar"):
-        if delete_plaza in st.session_state["data"]["Nº de plaza"].values:
+    
+    # Buscar el registro correspondiente a la plaza
+    registro_a_eliminar = st.session_state["data"][
+        st.session_state["data"]["Nº de plaza"] == delete_plaza
+    ]
+    
+    if not registro_a_eliminar.empty:
+        # Mostrar información del cliente antes de la confirmación
+        st.write("**Detalles del cliente aparcado:**")
+        st.table(registro_a_eliminar)
+        
+        # Confirmación del usuario
+        if st.button("Confirmar eliminación"):
             st.session_state["data"] = st.session_state["data"][
                 st.session_state["data"]["Nº de plaza"] != delete_plaza
             ]
             st.success(f"Registro de la plaza {delete_plaza} eliminado exitosamente.")
             save_data_to_csv()
-        else:
-            st.warning("El número de plaza no existe.")
+    else:
+        st.warning("El número de plaza no existe.")
