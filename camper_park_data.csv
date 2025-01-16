@@ -1,3 +1,3 @@
-Nº de plaza,Nombre,Día de llegada,Día de salida estimado,Nacionalidad,Servicios
-1,manuel,2025-01-16,2025-01-30,españa,algo
-7,manuel Javier,2025-01-16,2025-01-21,dd,dd
+Nº de plaza,Nombre,Día de llegada,Día de salida estimado,Nacionalidad,Servicios,Duración,Color
+,,,,,,,blue
+1.0,Martina,2025-01-16,2025-01-16,aa,aa,0.0,green
