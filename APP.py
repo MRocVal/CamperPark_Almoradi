@@ -6,42 +6,37 @@ Created on Thu Jan 16 12:05:01 2025
 @author: manuelrocamoravalenti
 """
 
+
 import streamlit as st
 import pandas as pd
 import os
 
-# Configuración inicial de la app
-st.set_page_config(page_title="Camper Park Almoradí", layout="wide")
-
-# Nombre del archivo CSV
-CSV_FILE = "camper_park_data.csv"
-
-# Cargar datos desde el archivo CSV al iniciar
-if "data" not in st.session_state:
-    if os.path.exists(CSV_FILE):
-        st.session_state["data"] = pd.read_csv(CSV_FILE)
-        # Convertir columnas de fechas al formato adecuado
-        st.session_state["data"]["Día de llegada"] = pd.to_datetime(st.session_state["data"]["Día de llegada"]).dt.date
-        st.session_state["data"]["Día de salida estimado"] = pd.to_datetime(st.session_state["data"]["Día de salida estimado"]).dt.date
-    else:
-        st.session_state["data"] = pd.DataFrame(
-            columns=["Nº de plaza", "Nombre", "Día de llegada", "Día de salida estimado", "Nacionalidad", "Servicios"]
-        )
-
-# Guardar datos en el archivo CSV
+# Guardar datos en el archivo CSV y recargarlo
 def save_data_to_csv():
-    st.session_state["data"].to_csv(CSV_FILE, index=False)
-
-
+    if "data" in st.session_state:
+        with open("camper_park_data_modificado.csv", "w") as f:
+            st.session_state["data"].to_csv(f, index=False)
+        # Recargar el archivo inmediatamente después de guardar
+        st.session_state["data"] = pd.read_csv("camper_park_data_modificado.csv")
+        st.success("Archivo CSV guardado y recargado exitosamente como 'camper_park_data_modificado.csv'.")
+        
+        
+# Botón para actualizar datos desde el CSV
+def refresh_data():
+    if os.path.exists("camper_park_data_modificado.csv"):
+        st.session_state["data"] = pd.read_csv("camper_park_data_modificado.csv")
+        st.success("Datos recargados desde el archivo CSV.")
 
 # Menú de navegación
-menu = ["Principal", "Consulta", "Búsqueda", "Modificación/Añadir", "Eliminación"]
+menu = ["Principal", "Consulta", "Modificación/Añadir", "Eliminación"]
 choice = st.sidebar.selectbox("Seleccione una página", menu)
 
 
 
 
 
+
+    
 
 if choice == "Principal":
     st.title("Camper Park Almoradí")
@@ -66,6 +61,21 @@ if choice == "Principal":
         
 # Página de Consulta
 elif choice == "Consulta":
+    
+    # Botón de actualizar en cada página
+    if st.button("Actualizar datos"):
+        refresh_data()
+    # Interfaz para subir el archivo CSV
+    uploaded_file = st.file_uploader("Sube tu archivo CSV", type="csv")
+
+    # Procesar archivo subido
+    if uploaded_file is not None:
+        st.session_state["data"] = pd.read_csv(uploaded_file)
+        # Convertir columnas de fechas al formato adecuado (si existen)
+        if "Día de llegada" in st.session_state["data"]:
+            st.session_state["data"]["Día de llegada"] = pd.to_datetime(st.session_state["data"]["Día de llegada"]).dt.date
+        if "Día de salida estimado" in st.session_state["data"]:
+            st.session_state["data"]["Día de salida estimado"] = pd.to_datetime(st.session_state["data"]["Día de salida estimado"]).dt.date
     st.title("Consulta del Estado del Parking")
     if st.session_state["data"].empty:
         st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
@@ -120,28 +130,13 @@ elif choice == "Consulta":
 
 
 
-
-# Página de Búsqueda
-elif choice == "Búsqueda":
-    
-    
-    
-    
-    st.title("Búsqueda de Plazas")
-    search_name = st.text_input("Introduce el nombre del cliente:")
-    if st.button("Buscar"):
-        results = st.session_state["data"][st.session_state["data"]["Nombre"].str.contains(search_name, case=False, na=False)]
-        if not results.empty:
-            st.dataframe(results)
-        else:
-            st.warning("No se encontraron resultados para la búsqueda.")
-
 # Página de Modificación
 elif choice == "Modificación/Añadir":
     
-    
-    
-    
+    # Botón de actualizar en cada página
+    if st.button("Actualizar datos"):
+        refresh_data()
+        
     st.title("Consulta del Estado del Parking")
     if st.session_state["data"].empty:
         st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
@@ -198,10 +193,12 @@ elif choice == "Modificación/Añadir":
             st.success(f"Plaza {plaza} añadida.")
         save_data_to_csv()
 
-
-
 # Página de Eliminación
 elif choice == "Eliminación":
+    st.dataframe(st.session_state["data"])
+    # Botón de actualizar en cada página
+    if st.button("Actualizar datos"):
+        refresh_data()
         
     st.title("Eliminar Registros")
     delete_plaza = st.number_input("Número de plaza a eliminar:", min_value=1, value=1, key="delete_plaza")
@@ -225,3 +222,17 @@ elif choice == "Eliminación":
             save_data_to_csv()
     else:
         st.warning("El número de plaza no existe.")
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
