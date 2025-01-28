@@ -10,6 +10,7 @@ Created on Thu Jan 16 12:05:01 2025
 import streamlit as st
 import pandas as pd
 import os
+from datetime import datetime
 
 # Guardar datos en el archivo CSV y recargarlo
 def save_data_to_csv():
@@ -29,11 +30,21 @@ def refresh_data():
 
 def download_csv():
     if "data" in st.session_state:
+        # Obtener la fecha y hora actual
+        now = datetime.now()
+        formatted_time = now.strftime("%Y-%m-%d_%H-%M-%S")  # Formato: Año-Mes-Día_Hora-Minuto-Segundo
+        
+        # Crear el nombre del archivo dinámico
+        file_name = f"camper_park_data_{formatted_time}.csv"
+        
+        # Convertir el DataFrame a CSV
         csv_data = st.session_state["data"].to_csv(index=False).encode('utf-8')
+        
+        # Botón de descarga
         st.download_button(
             label="Descargar datos como CSV",
             data=csv_data,
-            file_name="camper_park_data_modificado.csv",
+            file_name=file_name,
             mime="text/csv"
         )
 
