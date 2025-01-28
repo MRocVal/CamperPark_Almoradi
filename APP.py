@@ -66,7 +66,8 @@ if choice == "Principal":
     # Botones de guardado, actualización y descarga
     st.button("Guardar y Recargar CSV", on_click=save_data_to_csv)
     st.button("Actualizar datos desde CSV", on_click=refresh_data)
-    download_csv()
+    download_csv()  # Aquí directamente llamamos a la función que incluye st.download_button
+    
 
 
         
@@ -84,13 +85,24 @@ elif choice == "Consulta":
 
     # Procesar archivo subido
     if uploaded_file is not None:
+        # Leer el archivo
         st.session_state["data"] = pd.read_csv(uploaded_file)
+
+        # Eliminar columnas con nombres que contengan "Unnamed"
+        st.session_state["data"] = st.session_state["data"].loc[:, ~st.session_state["data"].columns.str.contains('^Unnamed')]
+
         # Convertir columnas de fechas al formato adecuado (si existen)
         if "Día de llegada" in st.session_state["data"]:
             st.session_state["data"]["Día de llegada"] = pd.to_datetime(st.session_state["data"]["Día de llegada"]).dt.date
         if "Día de salida estimado" in st.session_state["data"]:
             st.session_state["data"]["Día de salida estimado"] = pd.to_datetime(st.session_state["data"]["Día de salida estimado"]).dt.date
-    st.title("Consulta del Estado del Parking")
+
+        st.title("Consulta del Estado del Parking")
+        st.write(st.session_state["data"])
+    
+    
+    
+    
     if st.session_state["data"].empty:
         st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
     else:
