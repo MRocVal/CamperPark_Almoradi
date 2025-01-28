@@ -59,7 +59,7 @@ if choice == "Principal":
         ¡Gracias por confiar en nosotros!
     """)
 
-    if st.button("Descarga datos"):
+    elif st.button("Descarga datos"):
         download_csv()
     
         
