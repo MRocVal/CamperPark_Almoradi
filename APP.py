@@ -27,6 +27,16 @@ def refresh_data():
         st.session_state["data"] = pd.read_csv("camper_park_data_modificado.csv")
         st.success("Datos recargados desde el archivo CSV.")
 
+def download_csv():
+    if "data" in st.session_state:
+        csv_data = st.session_state["data"].to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Descargar datos como CSV",
+            data=csv_data,
+            file_name="camper_park_data_modificado.csv",
+            mime="text/csv"
+        )
+
 # Menú de navegación
 menu = ["Principal", "Consulta", "Modificación/Añadir", "Eliminación"]
 choice = st.sidebar.selectbox("Seleccione una página", menu)
@@ -53,6 +63,10 @@ if choice == "Principal":
 
         ¡Gracias por confiar en nosotros!
     """)
+    # Botones de guardado, actualización y descarga
+    st.button("Guardar y Recargar CSV", on_click=save_data_to_csv)
+    st.button("Actualizar datos desde CSV", on_click=refresh_data)
+    download_csv()
 
 
         
