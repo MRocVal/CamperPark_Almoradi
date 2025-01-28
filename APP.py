@@ -59,9 +59,9 @@ if choice == "Principal":
         ¡Gracias por confiar en nosotros!
     """)
 
-    elif st.button("Descarga datos"):
-        download_csv()
-    
+    st.button("Guardar y Recargar CSV", on_click=save_data_to_csv)
+    st.button("Actualizar datos desde CSV", on_click=refresh_data)
+    st.button('Hola', on_click=download_csv)
         
         
         
