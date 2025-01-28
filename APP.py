@@ -59,7 +59,9 @@ if choice == "Principal":
         ¡Gracias por confiar en nosotros!
     """)
 
-    download_csv()
+    if st.button("Descarga datos"):
+        download_csv()
+    
         
         
         
