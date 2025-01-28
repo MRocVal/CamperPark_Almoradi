@@ -49,7 +49,7 @@ def download_csv():
         )
 
 # Menú de navegación
-menu = ["Principal", "Consulta", "Modificación/Añadir", "Eliminación"]
+menu = ["Principal", "Consulta", "Añadir", "Eliminación"]
 choice = st.sidebar.selectbox("Seleccione una página", menu)
 
 
@@ -168,7 +168,7 @@ elif choice == "Consulta":
 
 
 # Página de Modificación
-elif choice == "Modificación/Añadir":
+elif choice == "Añadir":
     
     # Botón de actualizar en cada página
     if st.button("Actualizar datos"):
