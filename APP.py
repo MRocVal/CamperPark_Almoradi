@@ -104,6 +104,9 @@ elif choice == "Consulta":
         # Eliminar columnas con nombres que contengan "Unnamed"
         st.session_state["data"] = st.session_state["data"].loc[:, ~st.session_state["data"].columns.str.contains('^Unnamed')]
 
+        # Eliminar filas donde todos los valores sean None (NaN)
+        st.session_state["data"] = st.session_state["data"].dropna(how='all')
+
         # Convertir columnas de fechas al formato adecuado (si existen)
         if "Día de llegada" in st.session_state["data"]:
             st.session_state["data"]["Día de llegada"] = pd.to_datetime(st.session_state["data"]["Día de llegada"]).dt.date
