@@ -105,7 +105,7 @@ elif choice == "Consulta":
         st.session_state["data"] = st.session_state["data"].loc[:, ~st.session_state["data"].columns.str.contains('^Unnamed')]
 
         # Eliminar filas donde todos los valores sean None (NaN)
-        st.session_state["data"] = st.session_state["data"].dropna(how='all')
+        st.session_state["data"] = st.session_state["data"].dropna
 
         # Convertir columnas de fechas al formato adecuado (si existen)
         if "Día de llegada" in st.session_state["data"]:
