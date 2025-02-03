@@ -64,7 +64,7 @@ if choice == "Principal":
     st.title("LA WEB ESTA EN MANTENIMIENTO.....ESPERE PARA USARLA ")
     
     #st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
-    st.write("""
+    #st.write("""
         **Bienvenidos a Camper Park Almoradí**  
         Este sistema ha sido diseñado para gestionar, coordinar y organizar el uso de las plazas en nuestro parking de una manera eficiente.  
         
