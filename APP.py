@@ -61,9 +61,9 @@ choice = st.sidebar.selectbox("Seleccione una página", menu)
 
 if choice == "Principal":
 
-    st.title("Camper Park Almoradí 1 ")
+    st.title("LA WEB ESTA EN MANTENIMIENTO.....ESPERE PARA USARLA ")
     
-    st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
+    #st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
     st.write("""
         **Bienvenidos a Camper Park Almoradí**  
         Este sistema ha sido diseñado para gestionar, coordinar y organizar el uso de las plazas en nuestro parking de una manera eficiente.  
@@ -85,7 +85,7 @@ if choice == "Principal":
         
         
 
-""""    
+   
         
 # Página de Consulta
 elif choice == "Consulta":
@@ -262,7 +262,7 @@ elif choice == "Eliminación":
     else:
         st.warning("El número de plaza no existe.")
 
-"""
+
         
         
         
