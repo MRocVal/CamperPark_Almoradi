@@ -60,7 +60,7 @@ choice = st.sidebar.selectbox("Seleccione una página", menu)
     
 
 if choice == "Principal":
-    st.title("Camper Park Almoradí")
+    st.title("Camper Park Almoradí 1 ")
     st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
     st.write("""
         **Bienvenidos a Camper Park Almoradí**  
