@@ -84,7 +84,8 @@ if choice == "Principal":
 
         
         
-        
+
+""""    
         
 # Página de Consulta
 elif choice == "Consulta":
@@ -260,7 +261,8 @@ elif choice == "Eliminación":
             save_data_to_csv()
     else:
         st.warning("El número de plaza no existe.")
-        
+
+"""
         
         
         
