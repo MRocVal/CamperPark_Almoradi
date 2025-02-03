@@ -60,7 +60,9 @@ choice = st.sidebar.selectbox("Seleccione una página", menu)
     
 
 if choice == "Principal":
+
     st.title("Camper Park Almoradí 1 ")
+    '''
     st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
     st.write("""
         **Bienvenidos a Camper Park Almoradí**  
@@ -78,7 +80,7 @@ if choice == "Principal":
     st.button("Guardar y Recargar CSV", on_click=save_data_to_csv)
     st.button("Actualizar datos desde CSV", on_click=refresh_data)
     download_csv()  # Aquí directamente llamamos a la función que incluye st.download_button
-    
+    '''
 
 
         
