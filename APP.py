@@ -61,8 +61,18 @@ choice = st.sidebar.selectbox("Seleccione una página", menu)
 
 if choice == "Principal":
 
-    st.title("CAMPER PARK - ALMORADI  ")
+    st.title("CAMPER PARK - ALMORADI")
     st.write(""" Version 1.0.3 """)
+
+    st.write(""" **Atencion !!!!!** a lo largo de esta tarde estará disponible la Version 2.0
+    
+    Las nuevas actualizaciones serán:
+        - Calendario con la duración de estancia para los clientes
+        - Tabla resumen con la duracion de cada plaza
+        - Modificación de errores al comienzo de la APP """)
+
+
+
     st.image("image1.jpeg", use_container_width=True)  # Cambia "image1.jpeg" por la ruta de tu imagen
     st.write("""
         **Bienvenidos a Camper Park Almoradí**  
