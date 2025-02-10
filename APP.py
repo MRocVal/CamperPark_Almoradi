@@ -11,6 +11,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
+from streamlit_calendar import calendar
 
 # Guardar datos en el archivo CSV y recargarlo
 def save_data_to_csv():
@@ -87,12 +88,15 @@ if choice == "Principal":
 
    
         
+
+
 # Página de Consulta
 elif choice == "Consulta":
     
     # Botón de actualizar en cada página
     if st.button("Actualizar datos"):
         refresh_data()
+    
     # Interfaz para subir el archivo CSV
     uploaded_file = st.file_uploader("Sube tu archivo CSV", type="csv")
 
@@ -116,6 +120,27 @@ elif choice == "Consulta":
 
         st.title("Consulta del Estado del Parking")
         st.write(st.session_state["data"])
+        
+        # Crear eventos para el calendario
+        events = []
+        for _, row in st.session_state["data"].iterrows():
+            event = {
+                "title": f'Plaza {row["Nº de plaza"]}',
+                "start": str(row["Día de llegada"]),
+                "end": str(row["Día de salida estimado"]),
+                "allDay": True
+            }
+            events.append(event)
+
+        # Configuración del calendario
+        calendar_options = {
+            "initialView": "dayGridMonth",
+            "editable": False,
+            "selectable": True,
+        }
+
+        # Mostrar el calendario
+        calendar(events=events, options=calendar_options)
     
     
     
