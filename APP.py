@@ -63,14 +63,9 @@ choice = st.sidebar.selectbox("Seleccione una página", menu)
 if choice == "Principal":
 
     st.title("CAMPER PARK - ALMORADI")
-    st.write(""" Version 1.0.3 """)
+    st.write(""" Version 2.0 """)
 
-    st.write(""" **Atencion !!!!!** a lo largo de esta tarde estará disponible la Version 2.0
-    
-    Las nuevas actualizaciones serán:
-        - Calendario con la duración de estancia para los clientes
-        - Tabla resumen con la duracion de cada plaza
-        - Modificación de errores al comienzo de la APP """)
+    st.write(""" Ya está disponible la ultima versión de la APP, **A disfrutar !!! ** """)
 
 
 
