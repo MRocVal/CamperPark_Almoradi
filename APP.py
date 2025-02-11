@@ -11,6 +11,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
+from streamlit_calendar import calendar
 
 # Guardar datos en el archivo CSV y recargarlo
 def save_data_to_csv():
@@ -96,13 +97,15 @@ if choice == "Principal":
         
 
    
-        
+
+
 # Página de Consulta
 elif choice == "Consulta":
     
     # Botón de actualizar en cada página
     if st.button("Actualizar datos"):
         refresh_data()
+    
     # Interfaz para subir el archivo CSV
     uploaded_file = st.file_uploader("Sube tu archivo CSV", type="csv")
 
@@ -126,60 +129,27 @@ elif choice == "Consulta":
 
         st.title("Consulta del Estado del Parking")
         st.write(st.session_state["data"])
-    
-    
-    
-    
-    if st.session_state["data"].empty:
-        st.warning("No hay datos disponibles. Comienza añadiendo nuevas plazas.")
-    else:
-        # Mostrar tabla de datos
-        st.dataframe(st.session_state["data"])
+        
+        # Crear eventos para el calendario
+        events = []
+        for _, row in st.session_state["data"].iterrows():
+            event = {
+                "title": f'Plaza {row["Nº de plaza"]}',
+                "start": str(row["Día de llegada"]),
+                "end": str(row["Día de salida estimado"]),
+                "allDay": True
+            }
+            events.append(event)
 
-        # Calcular el tiempo de estancia para cada plaza
-        st.session_state["data"]["Duración"] = (
-            pd.to_datetime(st.session_state["data"]["Día de salida estimado"]) - 
-            pd.to_datetime(st.session_state["data"]["Día de llegada"])
-        ).dt.days
+        # Configuración del calendario
+        calendar_options = {
+            "initialView": "dayGridMonth",
+            "editable": False,
+            "selectable": True,
+        }
 
-        # Determinar el color según la duración de la estancia
-        def asignar_color(duracion):
-            if pd.isnull(duracion):  # Vacías
-                return "blue"
-            elif duracion > 10:  # Mucho tiempo
-                return "red"
-            elif 5 <= duracion <= 10:  # Tiempo medio
-                return "yellow"
-            elif duracion < 5:  # Poco tiempo
-                return "green"
-
-        st.session_state["data"]["Color"] = st.session_state["data"]["Duración"].apply(asignar_color)
-
-        # Crear un gráfico de plazas usando Plotly
-        import plotly.graph_objects as go
-
-        fig = go.Figure()
-
-        for index, row in st.session_state["data"].iterrows():
-            fig.add_trace(go.Scatter(
-                x=[row["Nº de plaza"]],
-                y=[1],  # Posición ficticia para alinear las plazas
-                mode="markers",
-                marker=dict(size=30, color=row["Color"], symbol="square"),
-                name=f"Plaza {row['Nº de plaza']} - {row['Duración']} días"
-            ))
-
-        # Configuración del gráfico
-        fig.update_layout(
-            title="Estado de las Plazas",
-            xaxis=dict(title="Número de Plaza", tickmode="linear"),
-            yaxis=dict(visible=False),  # Ocultar el eje Y
-            showlegend=True,
-            height=400
-        )
-
-        # Mostrar gráfico
-        st.plotly_chart(fig, use_container_width=True)
+        # Mostrar el calendario
+        calendar(events=events, options=calendar_options)
 
 
 
