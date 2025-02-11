@@ -12,6 +12,8 @@ import pandas as pd
 import os
 from datetime import datetime
 from streamlit_calendar import calendar
+import matplotlib.colors as mcolors
+import numpy as np
 
 # Guardar datos en el archivo CSV y recargarlo
 def save_data_to_csv():
@@ -94,6 +96,8 @@ if choice == "Principal":
    
 
 
+
+
 # Página de Consulta
 elif choice == "Consulta":
     
@@ -122,17 +126,37 @@ elif choice == "Consulta":
         if "Día de salida estimado" in st.session_state["data"]:
             st.session_state["data"]["Día de salida estimado"] = pd.to_datetime(st.session_state["data"]["Día de salida estimado"]).dt.date
 
+        # Calcular la duración en días
+        st.session_state["data"]["Duración"] = (
+            pd.to_datetime(st.session_state["data"]["Día de salida estimado"]) - 
+            pd.to_datetime(st.session_state["data"]["Día de llegada"])
+        ).dt.days
+
+        # Normalizar la duración para asignar colores
+        min_duracion = st.session_state["data"]["Duración"].min()
+        max_duracion = st.session_state["data"]["Duración"].max()
+
+        # Crear una función de mapeo de colores (rojo claro a rojo oscuro)
+        norm = mcolors.Normalize(vmin=min_duracion, vmax=max_duracion)
+        cmap = mcolors.LinearSegmentedColormap.from_list("", ["#ffcccc", "#ff0000"])  # Rojo claro a rojo oscuro
+
+        def get_color(duracion):
+            rgba = cmap(norm(duracion))
+            return mcolors.to_hex(rgba)  # Convertir de RGBA a HEX
+
         st.title("Consulta del Estado del Parking")
         st.write(st.session_state["data"])
         
-        # Crear eventos para el calendario
+        # Crear eventos para el calendario con colores basados en la duración
         events = []
         for _, row in st.session_state["data"].iterrows():
+            color = get_color(row["Duración"])
             event = {
-                "title": f'Plaza {row["Nº de plaza"]}',
+                "title": f'Plaza {row["Nº de plaza"]} ({row["Duración"]} días)',
                 "start": str(row["Día de llegada"]),
                 "end": str(row["Día de salida estimado"]),
-                "allDay": True
+                "allDay": True,
+                "color": color
             }
             events.append(event)
 
@@ -143,7 +167,7 @@ elif choice == "Consulta":
             "selectable": True,
         }
 
-        # Mostrar el calendario
+        # Mostrar el calendario con colores basados en la duración
         calendar(events=events, options=calendar_options)
 
 

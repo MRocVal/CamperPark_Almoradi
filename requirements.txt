@@ -1,3 +1,5 @@
 plotly
 datetime
 streamlit-calendar
+matplotlib
+numpy
