@@ -65,7 +65,7 @@ if choice == "Principal":
     st.title("CAMPER PARK - ALMORADI")
     st.write(""" Version 2.0 """)
 
-    st.write(""" Ya está disponible la ultima versión de la APP, **A disfrutar !!! **""")
+    st.write(""" Ya está disponible la ultima versión de la APP, **A disfrutar !!! ** """)
 
 
 
